@@ -1,7 +1,10 @@
 const path = require('path');
 const crypto = require('crypto');
+const dns = require('dns');
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
+
+dns.setServers(['8.8.8.8', '8.8.4.4', '1.1.1.1']);
 const User = require('../models/user.model');
 
 dotenv.config({ path: path.resolve(__dirname, '..', '.env') });
