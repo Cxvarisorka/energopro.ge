@@ -20,6 +20,9 @@ app.use(cors({
   credentials: true,
 }));
 
+// Trust proxy headers (Vercel rewrites come through as proxied requests)
+app.set('trust proxy', 1);
+
 // Rate limiting
 const apiLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
