@@ -6,7 +6,6 @@ const rateLimit = require('express-rate-limit');
 const dotenv = require('dotenv');
 const connectDB = require('./configs/db.config');
 const globalErrorHandler = require('./middleware/error.middleware');
-const { startReminderCron } = require('./services/reminder.service');
 
 dotenv.config();
 
@@ -96,7 +95,6 @@ connectDB().then(() => {
   app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
   });
-  startReminderCron();
 });
 
 module.exports = app;
