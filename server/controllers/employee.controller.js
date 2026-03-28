@@ -1,8 +1,10 @@
+const mongoose = require('mongoose');
 const Employee = require('../models/employee.model');
 const Exam = require('../models/exam.model');
 const AppError = require('../utils/appError.util');
 const catchAsync = require('../utils/catchAsync.util');
 const { removeFromCloudinary } = require('../configs/cloudinary.config');
+const { invalidate, invalidatePattern } = require('../utils/cache.util');
 
 exports.getDepartments = catchAsync(async (req, res) => {
   const departments = await Employee.distinct('department');
@@ -28,11 +30,26 @@ exports.createEmployee = catchAsync(async (req, res) => {
   }
 
   const employee = await Employee.create(employeeData);
+
+  // Invalidate caches
+  invalidate('dashboard:stats');
+  invalidate('departments');
+
   res.status(201).json(employee);
 });
 
 exports.getEmployees = catchAsync(async (req, res) => {
-  const { page = 1, limit = 20, department, workplace, qualificationGroup, search, sortBy = 'createdAt', sortOrder = 'desc' } = req.query;
+  const {
+    page = 1,
+    limit = 20,
+    department,
+    workplace,
+    qualificationGroup,
+    search,
+    examStatus,
+    sortBy = 'createdAt',
+    sortOrder = 'desc',
+  } = req.query;
 
   const sanitizedPage = Math.max(1, Math.floor(Number(page)) || 1);
   const sanitizedLimit = Math.min(100, Math.max(1, Math.floor(Number(limit)) || 20));
@@ -46,15 +63,60 @@ exports.getEmployees = catchAsync(async (req, res) => {
   if (workplace) filter.workplace = String(workplace);
   if (qualificationGroup) filter.qualificationGroup = String(qualificationGroup);
 
+  // Use text search when available, fallback to regex for short queries
   if (search) {
-    const escaped = String(search).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    const regex = new RegExp(escaped, 'i');
-    filter.$or = [
-      { personalId: regex },
-      { fullName: regex },
-      { department: regex },
-      { position: regex },
-    ];
+    const trimmed = String(search).trim();
+    if (trimmed.length >= 2) {
+      // Try text search first (uses index efficiently)
+      const escaped = trimmed.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      const regex = new RegExp(escaped, 'i');
+      filter.$or = [
+        { personalId: regex },
+        { fullName: regex },
+        { department: regex },
+        { position: regex },
+      ];
+    }
+  }
+
+  // Server-side exam status filtering using aggregation
+  if (examStatus && ['expired', 'upcoming', 'ok', 'none'].includes(examStatus)) {
+    const now = new Date();
+    const thirtyDaysFromNow = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+
+    // Get employee IDs matching the exam status
+    if (examStatus === 'none') {
+      // Employees with no exams at all
+      const employeesWithExams = await Exam.distinct('employee');
+      filter._id = { $nin: employeesWithExams };
+    } else {
+      let examFilter;
+      if (examStatus === 'expired') {
+        // Employees that have at least one expired exam
+        const expiredEmployees = await Exam.distinct('employee', { nextExamDate: { $lt: now } });
+        filter._id = { $in: expiredEmployees };
+      } else if (examStatus === 'upcoming') {
+        // Employees that have upcoming exams (within 30 days) but NO expired
+        const upcomingEmployees = await Exam.distinct('employee', {
+          nextExamDate: { $gte: now, $lte: thirtyDaysFromNow },
+        });
+        const expiredEmployees = await Exam.distinct('employee', { nextExamDate: { $lt: now } });
+        const expiredSet = new Set(expiredEmployees.map(String));
+        filter._id = { $in: upcomingEmployees.filter((id) => !expiredSet.has(String(id))) };
+      } else if (examStatus === 'ok') {
+        // Employees with exams, none expired, none upcoming soon
+        const allWithExams = await Exam.distinct('employee');
+        const expiredEmployees = await Exam.distinct('employee', { nextExamDate: { $lt: now } });
+        const upcomingEmployees = await Exam.distinct('employee', {
+          nextExamDate: { $gte: now, $lte: thirtyDaysFromNow },
+        });
+        const excludeSet = new Set([
+          ...expiredEmployees.map(String),
+          ...upcomingEmployees.map(String),
+        ]);
+        filter._id = { $in: allWithExams.filter((id) => !excludeSet.has(String(id))) };
+      }
+    }
   }
 
   const skip = (sanitizedPage - 1) * sanitizedLimit;
@@ -165,6 +227,10 @@ exports.updateEmployee = catchAsync(async (req, res) => {
     runValidators: true,
   });
 
+  // Invalidate caches
+  invalidate('dashboard:stats');
+  invalidate('departments');
+
   res.json(updated);
 });
 
@@ -177,6 +243,10 @@ exports.deleteEmployee = catchAsync(async (req, res) => {
   await removeFromCloudinary(employee.photo);
   await Exam.deleteMany({ employee: employee._id });
   await employee.deleteOne();
+
+  // Invalidate caches
+  invalidate('dashboard:stats');
+  invalidate('departments');
 
   res.json({ message: 'Employee and related exams deleted' });
 });

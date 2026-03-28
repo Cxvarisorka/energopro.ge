@@ -92,8 +92,9 @@ export default function EmployeeList() {
     if (department) params.department = department;
     if (workplace) params.workplace = workplace;
     if (qualificationGroup) params.qualificationGroup = qualificationGroup;
+    if (examStatusFilter) params.examStatus = examStatusFilter;
     fetchEmployees(params);
-  }, [page, sortBy, sortOrder, department, workplace, qualificationGroup, fetchEmployees]);
+  }, [page, sortBy, sortOrder, department, workplace, qualificationGroup, examStatusFilter, fetchEmployees]);
 
   // Debounced search - triggers on typing
   useEffect(() => {
@@ -104,6 +105,7 @@ export default function EmployeeList() {
       if (department) params.department = department;
       if (workplace) params.workplace = workplace;
       if (qualificationGroup) params.qualificationGroup = qualificationGroup;
+      if (examStatusFilter) params.examStatus = examStatusFilter;
       if (page !== 1) {
         setSearchParams({ page: 1 });
       } else {
@@ -127,12 +129,8 @@ export default function EmployeeList() {
     return sortOrder === 'asc' ? <ChevronUp size={14} className="inline" /> : <ChevronDown size={14} className="inline" />;
   };
 
-  const filteredEmployees = examStatusFilter
-    ? employees.filter((emp) => {
-        if (examStatusFilter === 'ok') return emp.examStatus !== 'expired' && emp.examStatus !== 'upcoming' && emp.examStatus !== 'none';
-        return emp.examStatus === examStatusFilter;
-      })
-    : employees;
+  // Exam status filtering is now done server-side
+  const filteredEmployees = employees;
 
   const inputClass = 'w-full rounded border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none';
 
