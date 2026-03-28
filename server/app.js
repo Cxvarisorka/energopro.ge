@@ -32,14 +32,14 @@ const apiLimiter = rateLimit({
   max: 200,
   standardHeaders: true,
   legacyHeaders: false,
-  message: { message: 'Too many requests, please try again later' },
+  message: { message: 'ძალიან ბევრი მოთხოვნა, გთხოვთ სცადოთ მოგვიანებით' },
 });
 app.use('/api/', apiLimiter);
 
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 10,
-  message: { message: 'Too many login attempts, please try again later' },
+  message: { message: 'ძალიან ბევრი შესვლის მცდელობა, გთხოვთ სცადოთ მოგვიანებით' },
 });
 app.use('/api/auth/login', authLimiter);
 
@@ -108,7 +108,7 @@ app.get('/api/health', (req, res) => {
 // 404 handler
 const AppError = require('./utils/appError.util');
 app.use((req, res, next) => {
-  next(new AppError(`Cannot find ${req.method} ${req.originalUrl}`, 404));
+  next(new AppError(`${req.method} ${req.originalUrl} ვერ მოიძებნა`, 404));
 });
 
 // Global error handler

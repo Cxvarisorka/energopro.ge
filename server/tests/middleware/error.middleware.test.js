@@ -23,10 +23,10 @@ describe('Error Middleware', () => {
 
   it('should handle AppError with correct status and message', () => {
     process.env.NODE_ENV = 'production';
-    const err = new AppError('Not found', 404);
+    const err = new AppError('ვერ მოიძებნა', 404);
     globalErrorHandler(err, req, res, next);
     expect(res.status).toHaveBeenCalledWith(404);
-    expect(res.json).toHaveBeenCalledWith({ message: 'Not found' });
+    expect(res.json).toHaveBeenCalledWith({ message: 'ვერ მოიძებნა' });
   });
 
   it('should handle unknown errors with 500 status', () => {
@@ -34,7 +34,7 @@ describe('Error Middleware', () => {
     const err = new Error('Something broke');
     globalErrorHandler(err, req, res, next);
     expect(res.status).toHaveBeenCalledWith(500);
-    expect(res.json).toHaveBeenCalledWith({ message: 'Something went wrong' });
+    expect(res.json).toHaveBeenCalledWith({ message: 'დაფიქსირდა შეცდომა' });
   });
 
   it('should handle CastError', () => {

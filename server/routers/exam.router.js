@@ -9,11 +9,11 @@ const router = express.Router({ mergeParams: true });
 router.use(protect);
 
 const examValidation = [
-  body('discipline').notEmpty().withMessage('Discipline is required'),
-  body('examDate').isISO8601().withMessage('Valid exam date is required'),
-  body('nextExamDate').isISO8601().withMessage('Valid next exam date is required'),
-  body('reason').notEmpty().withMessage('Reason is required'),
-  body('grade').notEmpty().withMessage('Grade/result is required'),
+  body('discipline').notEmpty().withMessage('დისციპლინა აუცილებელია'),
+  body('examDate').isISO8601().withMessage('სწორი გამოცდის თარიღი აუცილებელია'),
+  body('nextExamDate').isISO8601().withMessage('სწორი შემდეგი გამოცდის თარიღი აუცილებელია'),
+  body('reason').notEmpty().withMessage('მიზეზი აუცილებელია'),
+  body('grade').notEmpty().withMessage('შეფასება აუცილებელია'),
 ];
 
 router

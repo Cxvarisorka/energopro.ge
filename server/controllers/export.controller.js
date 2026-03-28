@@ -5,10 +5,33 @@ const catchAsync = require('../utils/catchAsync.util');
 const escapeCSV = (value) => {
   if (value == null) return '';
   const str = String(value);
-  if (str.includes(',') || str.includes('"') || str.includes('\n')) {
+  if (str.includes(',') || str.includes('"') || str.includes('\n') || str.includes(';')) {
     return `"${str.replace(/"/g, '""')}"`;
   }
   return str;
+};
+
+// Force Excel to treat value as text (prevents numeric personalId from losing leading zeros)
+const forceText = (value) => {
+  if (value == null) return '';
+  return `="${String(value)}"`;
+};
+
+const formatDate = (date) => {
+  if (!date) return '';
+  const d = new Date(date);
+  if (isNaN(d.getTime())) return '';
+  const day = String(d.getDate()).padStart(2, '0');
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const year = d.getFullYear();
+  return `${day}/${month}/${year}`;
+};
+
+const STATUS_LABELS_GE = {
+  expired: 'ვადაგასული',
+  upcoming: 'მოახლოებული',
+  ok: 'მოქმედი',
+  none: 'გამოცდები არ აქვს',
 };
 
 exports.exportEmployeesCSV = catchAsync(async (req, res) => {
@@ -52,39 +75,39 @@ exports.exportEmployeesCSV = catchAsync(async (req, res) => {
   // BOM for UTF-8 Excel compatibility
   const BOM = '\uFEFF';
   const headers = [
-    'Personal ID',
-    'Full Name',
-    'Department',
-    'Position',
-    'Workplace',
-    'Qualification Group',
-    'Birth Date',
-    'Special Permissions',
-    'Exam Status',
-    'Total Exams',
-    'Passed Exams',
-    'Nearest Exam Date',
+    'პირადი ნომერი',
+    'სახელი და გვარი',
+    'დეპარტამენტი',
+    'თანამდებობა',
+    'სამუშაო ადგილი',
+    'კვალიფიკაციის ჯგუფი',
+    'დაბადების თარიღი',
+    'სპეციალური ნებართვები',
+    'გამოცდის სტატუსი',
+    'სულ გამოცდები',
+    'წარმატებული გამოცდები',
+    'უახლოესი გამოცდის თარიღი',
   ];
 
   const rows = employees.map((emp) => {
     const status = statusMap[emp._id.toString()] || { totalExams: 0, passedExams: 0, examStatus: 'none', nearestExamDate: null };
     return [
-      emp.personalId,
-      emp.fullName,
-      emp.department,
-      emp.position,
-      emp.workplace,
-      emp.qualificationGroup,
-      emp.birthDate ? new Date(emp.birthDate).toISOString().slice(0, 10) : '',
-      (emp.specialPermissions || []).join('; '),
-      status.examStatus,
+      forceText(emp.personalId),
+      escapeCSV(emp.fullName),
+      escapeCSV(emp.department),
+      escapeCSV(emp.position),
+      escapeCSV(emp.workplace),
+      escapeCSV(emp.qualificationGroup),
+      formatDate(emp.birthDate),
+      escapeCSV((emp.specialPermissions || []).join('; ')),
+      escapeCSV(STATUS_LABELS_GE[status.examStatus] || status.examStatus),
       status.totalExams,
       status.passedExams,
-      status.nearestExamDate ? new Date(status.nearestExamDate).toISOString().slice(0, 10) : '',
-    ].map(escapeCSV).join(',');
+      formatDate(status.nearestExamDate),
+    ].join(',');
   });
 
-  const csv = BOM + headers.join(',') + '\n' + rows.join('\n');
+  const csv = BOM + headers.map(escapeCSV).join(',') + '\n' + rows.join('\n');
 
   res.set({
     'Content-Type': 'text/csv; charset=utf-8',

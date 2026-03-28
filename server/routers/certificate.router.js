@@ -13,7 +13,7 @@ router.use(protect);
 router.get('/:employeeId/:examId', catchAsync(async (req, res) => {
   const employee = await Employee.findById(req.params.employeeId).lean();
   if (!employee) {
-    throw new AppError('Employee not found', 404);
+    throw new AppError('თანამშრომელი ვერ მოიძებნა', 404);
   }
 
   const exam = await Exam.findOne({
@@ -21,7 +21,7 @@ router.get('/:employeeId/:examId', catchAsync(async (req, res) => {
     employee: req.params.employeeId,
   }).lean();
   if (!exam) {
-    throw new AppError('Exam not found', 404);
+    throw new AppError('გამოცდა ვერ მოიძებნა', 404);
   }
 
   const pdfBuffer = await generateCertificatePDF(employee, exam, req.user);

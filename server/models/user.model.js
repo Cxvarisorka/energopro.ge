@@ -5,20 +5,20 @@ const userSchema = new mongoose.Schema(
   {
     email: {
       type: String,
-      required: [true, 'Email is required'],
+      required: [true, 'ელ. ფოსტა აუცილებელია'],
       unique: true,
       lowercase: true,
       trim: true,
     },
     password: {
       type: String,
-      required: [true, 'Password is required'],
+      required: [true, 'პაროლი აუცილებელია'],
       minlength: 6,
       select: false,
     },
     fullName: {
       type: String,
-      required: [true, 'Full name is required'],
+      required: [true, 'სახელი და გვარი აუცილებელია'],
       trim: true,
     },
     role: {
@@ -26,7 +26,7 @@ const userSchema = new mongoose.Schema(
       enum: ['admin', 'director', 'viewer'],
       default: 'viewer',
     },
-    
+
   },
   { timestamps: true }
 );

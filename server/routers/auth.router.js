@@ -11,10 +11,10 @@ router.post(
   protect,
   authorize('admin'),
   [
-    body('email').isEmail().withMessage('Valid email is required'),
-    body('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters'),
-    body('fullName').notEmpty().withMessage('Full name is required'),
-    body('role').isIn(['admin', 'director', 'viewer']).withMessage('Invalid role'),
+    body('email').isEmail().withMessage('სწორი ელ. ფოსტა აუცილებელია'),
+    body('password').isLength({ min: 6 }).withMessage('პაროლი მინიმუმ 6 სიმბოლო უნდა იყოს'),
+    body('fullName').notEmpty().withMessage('სახელი და გვარი აუცილებელია'),
+    body('role').isIn(['admin', 'director', 'viewer']).withMessage('არასწორი როლი'),
   ],
   validate,
   authController.register
@@ -23,8 +23,8 @@ router.post(
 router.post(
   '/login',
   [
-    body('email').isEmail().withMessage('Valid email is required'),
-    body('password').notEmpty().withMessage('Password is required'),
+    body('email').isEmail().withMessage('სწორი ელ. ფოსტა აუცილებელია'),
+    body('password').notEmpty().withMessage('პაროლი აუცილებელია'),
   ],
   validate,
   authController.login

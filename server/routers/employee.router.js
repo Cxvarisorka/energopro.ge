@@ -12,21 +12,21 @@ router.use(protect);
 
 const employeeValidation = [
   body('personalId')
-    .notEmpty().withMessage('Personal ID is required')
-    .isLength({ max: 50 }).withMessage('Personal ID must be at most 50 characters'),
+    .notEmpty().withMessage('პირადი ნომერი აუცილებელია')
+    .isLength({ max: 50 }).withMessage('პირადი ნომერი მაქსიმუმ 50 სიმბოლო უნდა იყოს'),
   body('fullName')
-    .notEmpty().withMessage('Full name is required')
-    .isLength({ max: 200 }).withMessage('Full name must be at most 200 characters'),
+    .notEmpty().withMessage('სახელი და გვარი აუცილებელია')
+    .isLength({ max: 200 }).withMessage('სახელი და გვარი მაქსიმუმ 200 სიმბოლო უნდა იყოს'),
   body('department')
-    .notEmpty().withMessage('Department is required')
-    .isLength({ max: 200 }).withMessage('Department must be at most 200 characters'),
+    .notEmpty().withMessage('დეპარტამენტი აუცილებელია')
+    .isLength({ max: 200 }).withMessage('დეპარტამენტი მაქსიმუმ 200 სიმბოლო უნდა იყოს'),
   body('position')
-    .notEmpty().withMessage('Position is required')
-    .isLength({ max: 200 }).withMessage('Position must be at most 200 characters'),
+    .notEmpty().withMessage('თანამდებობა აუცილებელია')
+    .isLength({ max: 200 }).withMessage('თანამდებობა მაქსიმუმ 200 სიმბოლო უნდა იყოს'),
   body('workplace')
-    .notEmpty().withMessage('Workplace is required'),
+    .notEmpty().withMessage('სამუშაო ადგილი აუცილებელია'),
   body('qualificationGroup')
-    .isIn(['I', 'II', 'III', 'IV', 'V']).withMessage('Invalid qualification group'),
+    .isIn(['I', 'II', 'III', 'IV', 'V']).withMessage('არასწორი კვალიფიკაციის ჯგუფი'),
 ];
 
 // Cache departments for 10 minutes

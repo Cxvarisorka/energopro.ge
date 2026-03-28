@@ -8,7 +8,7 @@ exports.register = catchAsync(async (req, res) => {
 
   const existingUser = await User.findOne({ email: String(email).toLowerCase().trim() });
   if (existingUser) {
-    throw new AppError('User with this email already exists', 400);
+    throw new AppError('ამ ელ. ფოსტით მომხმარებელი უკვე არსებობს', 400);
   }
 
   const allowedRoles = ['admin', 'director', 'viewer'];
@@ -33,7 +33,7 @@ exports.login = catchAsync(async (req, res) => {
 
   const user = await User.findOne({ email }).select('+password');
   if (!user || !(await user.comparePassword(password))) {
-    throw new AppError('Invalid email or password', 401);
+    throw new AppError('არასწორი ელ. ფოსტა ან პაროლი', 401);
   }
 
   const token = generateToken(user._id);
@@ -51,7 +51,7 @@ exports.login = catchAsync(async (req, res) => {
 
 exports.logout = (req, res) => {
   clearTokenCookie(res);
-  res.json({ message: 'Logged out successfully' });
+  res.json({ message: 'წარმატებით გამოხვედით' });
 };
 
 exports.getMe = (req, res) => {

@@ -10,27 +10,27 @@ const examSchema = new mongoose.Schema(
     },
     discipline: {
       type: String,
-      required: [true, 'Discipline is required'],
+      required: [true, 'დისციპლინა აუცილებელია'],
       trim: true,
       // Predefined options, but accepts any string for future extensibility
       // Common: UTS, TEJ, SUJ, PSDJ, Special Work, Medical Check
     },
     examDate: {
       type: Date,
-      required: [true, 'Exam date is required'],
+      required: [true, 'გამოცდის თარიღი აუცილებელია'],
     },
     nextExamDate: {
       type: Date,
-      required: [true, 'Next exam date is required'],
+      required: [true, 'შემდეგი გამოცდის თარიღი აუცილებელია'],
     },
     reason: {
       type: String,
-      required: [true, 'Reason for exam is required'],
+      required: [true, 'გამოცდის მიზეზი აუცილებელია'],
       trim: true,
     },
     grade: {
       type: String,
-      required: [true, 'Grade/result is required'],
+      required: [true, 'შეფასება აუცილებელია'],
       trim: true,
     },
     status: {

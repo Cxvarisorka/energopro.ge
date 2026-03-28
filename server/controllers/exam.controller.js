@@ -7,7 +7,7 @@ const { invalidate } = require('../utils/cache.util');
 exports.addExam = catchAsync(async (req, res) => {
   const employee = await Employee.findById(req.params.id).lean();
   if (!employee) {
-    throw new AppError('Employee not found', 404);
+    throw new AppError('თანამშრომელი ვერ მოიძებნა', 404);
   }
 
   const { discipline, examDate, nextExamDate, reason, grade, status, notes } = req.body;
@@ -55,7 +55,7 @@ exports.updateExam = catchAsync(async (req, res) => {
   );
 
   if (!exam) {
-    throw new AppError('Exam not found', 404);
+    throw new AppError('გამოცდა ვერ მოიძებნა', 404);
   }
 
   invalidate('dashboard:stats');
@@ -70,10 +70,10 @@ exports.deleteExam = catchAsync(async (req, res) => {
   });
 
   if (!exam) {
-    throw new AppError('Exam not found', 404);
+    throw new AppError('გამოცდა ვერ მოიძებნა', 404);
   }
 
   invalidate('dashboard:stats');
 
-  res.json({ message: 'Exam deleted' });
+  res.json({ message: 'გამოცდა წაშლილია' });
 });

@@ -12,7 +12,7 @@ describe('User Model Schema', () => {
   it('should have required schema fields', () => {
     const schema = User.schema.obj;
     expect(schema.email).toBeDefined();
-    expect(schema.email.required).toBeTruthy();
+    expect(schema.email.required[0]).toBe(true);
     expect(schema.email.unique).toBe(true);
     expect(schema.password).toBeDefined();
     expect(schema.password.required).toBeTruthy();

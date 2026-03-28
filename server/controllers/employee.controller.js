@@ -23,7 +23,7 @@ exports.createEmployee = catchAsync(async (req, res) => {
     try {
       employeeData.specialPermissions = JSON.parse(specialPermissions);
     } catch {
-      throw new AppError('Invalid specialPermissions format', 400);
+      throw new AppError('სპეციალური ნებართვების ფორმატი არასწორია', 400);
     }
   } else if (Array.isArray(specialPermissions)) {
     employeeData.specialPermissions = specialPermissions;
@@ -172,12 +172,12 @@ exports.getEmployees = catchAsync(async (req, res) => {
 exports.searchByPersonalId = catchAsync(async (req, res) => {
   const { personalId } = req.query;
   if (!personalId || typeof personalId !== 'string') {
-    throw new AppError('personalId query parameter is required', 400);
+    throw new AppError('პირადი ნომრის პარამეტრი აუცილებელია', 400);
   }
 
   const employee = await Employee.findOne({ personalId: String(personalId).trim() }).populate('exams').lean();
   if (!employee) {
-    throw new AppError('Employee not found', 404);
+    throw new AppError('თანამშრომელი ვერ მოიძებნა', 404);
   }
 
   res.json(employee);
@@ -186,7 +186,7 @@ exports.searchByPersonalId = catchAsync(async (req, res) => {
 exports.getEmployee = catchAsync(async (req, res) => {
   const employee = await Employee.findById(req.params.id).populate('exams').lean();
   if (!employee) {
-    throw new AppError('Employee not found', 404);
+    throw new AppError('თანამშრომელი ვერ მოიძებნა', 404);
   }
   res.json(employee);
 });
@@ -194,7 +194,7 @@ exports.getEmployee = catchAsync(async (req, res) => {
 exports.updateEmployee = catchAsync(async (req, res) => {
   const employee = await Employee.findById(req.params.id);
   if (!employee) {
-    throw new AppError('Employee not found', 404);
+    throw new AppError('თანამშრომელი ვერ მოიძებნა', 404);
   }
 
   const { personalId, fullName, department, position, workplace, qualificationGroup, specialPermissions, birthDate } = req.body;
@@ -216,7 +216,7 @@ exports.updateEmployee = catchAsync(async (req, res) => {
     try {
       updateData.specialPermissions = JSON.parse(specialPermissions);
     } catch {
-      throw new AppError('Invalid specialPermissions format', 400);
+      throw new AppError('სპეციალური ნებართვების ფორმატი არასწორია', 400);
     }
   } else if (Array.isArray(specialPermissions)) {
     updateData.specialPermissions = specialPermissions;
@@ -237,7 +237,7 @@ exports.updateEmployee = catchAsync(async (req, res) => {
 exports.deleteEmployee = catchAsync(async (req, res) => {
   const employee = await Employee.findById(req.params.id);
   if (!employee) {
-    throw new AppError('Employee not found', 404);
+    throw new AppError('თანამშრომელი ვერ მოიძებნა', 404);
   }
 
   await removeFromCloudinary(employee.photo);
@@ -248,5 +248,5 @@ exports.deleteEmployee = catchAsync(async (req, res) => {
   invalidate('dashboard:stats');
   invalidate('departments');
 
-  res.json({ message: 'Employee and related exams deleted' });
+  res.json({ message: 'თანამშრომელი და მისი გამოცდები წაშლილია' });
 });

@@ -10,11 +10,11 @@ describe('Exam Model Schema', () => {
   it('should have required schema fields', () => {
     const schema = Exam.schema.obj;
     expect(schema.employee.required).toBe(true);
-    expect(schema.discipline.required).toBeTruthy();
-    expect(schema.examDate.required).toBeTruthy();
-    expect(schema.nextExamDate.required).toBeTruthy();
-    expect(schema.reason.required).toBeTruthy();
-    expect(schema.grade.required).toBeTruthy();
+    expect(schema.discipline.required[0]).toBe(true);
+    expect(schema.examDate.required[0]).toBe(true);
+    expect(schema.nextExamDate.required[0]).toBe(true);
+    expect(schema.reason.required[0]).toBe(true);
+    expect(schema.grade.required[0]).toBe(true);
   });
 
   it('should reference Employee model', () => {

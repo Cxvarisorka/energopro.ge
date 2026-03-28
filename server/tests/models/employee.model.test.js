@@ -7,13 +7,13 @@ describe('Employee Model Schema', () => {
 
   it('should have required schema fields', () => {
     const schema = Employee.schema.obj;
-    expect(schema.personalId.required).toBeTruthy();
+    expect(schema.personalId.required[0]).toBe(true);
     expect(schema.personalId.unique).toBe(true);
-    expect(schema.fullName.required).toBeTruthy();
-    expect(schema.department.required).toBeTruthy();
-    expect(schema.position.required).toBeTruthy();
-    expect(schema.workplace.required).toBeTruthy();
-    expect(schema.qualificationGroup.required).toBeTruthy();
+    expect(schema.fullName.required[0]).toBe(true);
+    expect(schema.department.required[0]).toBe(true);
+    expect(schema.position.required[0]).toBe(true);
+    expect(schema.workplace.required[0]).toBe(true);
+    expect(schema.qualificationGroup.required[0]).toBe(true);
   });
 
   it('should have valid qualification group enum', () => {

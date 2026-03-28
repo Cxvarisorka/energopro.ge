@@ -4,29 +4,29 @@ const employeeSchema = new mongoose.Schema(
   {
     personalId: {
       type: String,
-      required: [true, 'Personal ID number is required'],
+      required: [true, 'პირადი ნომერი აუცილებელია'],
       unique: true,
       trim: true,
       index: true,
     },
     fullName: {
       type: String,
-      required: [true, 'Full name is required'],
+      required: [true, 'სახელი და გვარი აუცილებელია'],
       trim: true,
     },
     department: {
       type: String,
-      required: [true, 'Department is required'],
+      required: [true, 'დეპარტამენტი აუცილებელია'],
       trim: true,
     },
     position: {
       type: String,
-      required: [true, 'Position is required'],
+      required: [true, 'თანამდებობა აუცილებელია'],
       trim: true,
     },
     workplace: {
       type: String,
-      required: [true, 'Workplace is required'],
+      required: [true, 'სამუშაო ადგილი აუცილებელია'],
       enum: [
         'სათაო - მაღალი ძაბვა',
         'სათაო - სადისპეტჩერო',
@@ -55,7 +55,7 @@ const employeeSchema = new mongoose.Schema(
     },
     qualificationGroup: {
       type: String,
-      required: [true, 'Qualification group is required'],
+      required: [true, 'კვალიფიკაციის ჯგუფი აუცილებელია'],
       enum: ['I', 'II', 'III', 'IV', 'V'],
     },
     specialPermissions: [
