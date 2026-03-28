@@ -1,12 +1,15 @@
 {
   "name": "server",
   "version": "1.0.0",
-  "description": "",
+  "description": "Energopro employee certification management API",
   "main": "app.js",
   "scripts": {
     "start": "node app.js",
     "dev": "node --watch app.js",
-    "seed": "node utils/seed.util.js"
+    "seed": "node utils/seed.util.js",
+    "test": "jest --forceExit --detectOpenHandles",
+    "test:watch": "jest --watch --forceExit",
+    "test:coverage": "jest --coverage --forceExit --detectOpenHandles"
   },
   "keywords": [],
   "author": "",
@@ -26,6 +29,25 @@
     "mongoose": "^9.2.4",
     "multer": "^2.1.1",
     "multer-storage-cloudinary": "^4.0.0",
-    "pdfkit": "^0.17.2"
+    "node-cache": "^5.1.2",
+    "pdfkit": "^0.17.2",
+    "winston": "^3.17.0"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "mongodb-memory-server": "^10.4.0"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "testMatch": ["**/tests/**/*.test.js"],
+    "testTimeout": 15000,
+    "coverageDirectory": "coverage",
+    "collectCoverageFrom": [
+      "**/*.js",
+      "!**/node_modules/**",
+      "!**/tests/**",
+      "!**/coverage/**",
+      "!app.js"
+    ]
   }
 }

@@ -2,6 +2,7 @@ const Exam = require('../models/exam.model');
 const Employee = require('../models/employee.model');
 const AppError = require('../utils/appError.util');
 const catchAsync = require('../utils/catchAsync.util');
+const { invalidate } = require('../utils/cache.util');
 
 exports.addExam = catchAsync(async (req, res) => {
   const employee = await Employee.findById(req.params.id).lean();
@@ -14,6 +15,8 @@ exports.addExam = catchAsync(async (req, res) => {
     discipline, examDate, nextExamDate, reason, grade, status, notes,
     employee: req.params.id,
   });
+
+  invalidate('dashboard:stats');
 
   res.status(201).json(exam);
 });
@@ -55,6 +58,8 @@ exports.updateExam = catchAsync(async (req, res) => {
     throw new AppError('Exam not found', 404);
   }
 
+  invalidate('dashboard:stats');
+
   res.json(exam);
 });
 
@@ -67,6 +72,8 @@ exports.deleteExam = catchAsync(async (req, res) => {
   if (!exam) {
     throw new AppError('Exam not found', 404);
   }
+
+  invalidate('dashboard:stats');
 
   res.json({ message: 'Exam deleted' });
 });

@@ -1,4 +1,5 @@
 const AppError = require('../utils/appError.util');
+const logger = require('../utils/logger.util');
 
 const handleCastError = (err) =>
   new AppError(`Invalid ${err.path}: ${err.value}`, 400);
@@ -31,17 +32,37 @@ const globalErrorHandler = (err, req, res, next) => {
   const statusCode = error.statusCode || 500;
   const isOperational = error.isOperational || false;
 
+  if (!isOperational) {
+    logger.error('Unexpected error', {
+      method: req.method,
+      url: req.originalUrl,
+      statusCode,
+      message: err.message,
+      stack: err.stack,
+    });
+  } else if (statusCode >= 500) {
+    logger.error('Server error', {
+      method: req.method,
+      url: req.originalUrl,
+      statusCode,
+      message: error.message,
+    });
+  } else {
+    logger.warn('Client error', {
+      method: req.method,
+      url: req.originalUrl,
+      statusCode,
+      message: error.message,
+    });
+  }
+
   if (process.env.NODE_ENV !== 'development') {
-    if (!isOperational) {
-      console.error('UNEXPECTED ERROR:', err);
-    }
     return res.status(statusCode).json({
       message: isOperational ? error.message : 'Something went wrong',
     });
   }
 
   // Development: send full error details
-  console.error(err);
   res.status(statusCode).json({
     message: error.message,
     stack: error.stack,
